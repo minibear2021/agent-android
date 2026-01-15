@@ -1,7 +1,7 @@
 [package]
 name = "agent-android"
-version = "0.1.0"
-edition = "20260115"
+version = "0.1.2"
+edition = "2021"
 description = "Fast Android ADB CLI for AI agents"
 license = "Apache-2.0"
 
