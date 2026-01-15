@@ -238,20 +238,16 @@ fn process_node<'a>(
         let bounds = parse_bounds(bounds_str);
         let center = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2];
 
-        // Only assign refs to interactive elements
-        let ref_part = if is_interactive {
-            // *counter is already incremented at top for stable ID generation
-            refs.insert(ref_id.clone(), RefData {
-                bounds,
-                center,
-                role: role.to_string(),
-                name: if name.is_empty() { None } else { Some(name.to_string()) },
-            });
-            
-            format!(" [ref={}]", ref_id)
-        } else {
-            "".to_string()
-        };
+        // Always assign refs to included elements (interactive or not)
+        // *counter is already incremented at top for stable ID generation
+        refs.insert(ref_id.clone(), RefData {
+            bounds,
+            center,
+            role: role.to_string(),
+            name: if name.is_empty() { None } else { Some(name.to_string()) },
+        });
+        
+        let ref_part = format!(" [ref={}]", ref_id);
 
         // Build line: - role "name" [ref=e1]
         let indent = "  ".repeat(display_depth);
@@ -261,7 +257,7 @@ fn process_node<'a>(
             // Compact: - role "name" [ref=e1]
             // Format aligned with agent-browser (keep ref= prefix)
             // But remove ID for compactness
-            let short_ref = if is_interactive { format!(" [ref={}]", ref_id) } else { "".to_string() };
+            let short_ref = format!(" [ref={}]", ref_id);
             format!("{}- {}{}{}", indent, role, name_part, short_ref)
         } else {
             // Standard: - role "name" [ref=e1] [id=foo]
