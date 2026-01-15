@@ -67,8 +67,8 @@ agent-android snapshot -i
 # - textbox "Username" [ref=e2]
 
 # Interact using references
-agent-android click @e1
-agent-android type @e2 "myuser"
+agent-android click :e1
+agent-android type :e2 "myuser"
 ```
 
 ### Input Control
@@ -81,11 +81,11 @@ agent-android key HOME
 agent-android tap 500 1000
 
 # Tap element by ref (requires snapshot first)
-agent-android tap @e1
+agent-android tap :e1
 
 # Type text
 agent-android input "Hello World"
-agent-android input @e2 "Hello World"  # Taps @e2 first, then types
+agent-android input :e2 "Hello World"  # Taps e2 first, then types
 ```
 
 ### Query & Inspection
@@ -97,7 +97,7 @@ agent-android input @e2 "Hello World"  # Taps @e2 first, then types
 # locators: text, role, resource-id, content-desc
 # actions: click (default), type, info
 agent-android find text "Login" click
-agent-android find @e1 click
+agent-android find :e1 click
 agent-android find role button tap
 agent-android find text "Username" type "myuser"
 
@@ -106,7 +106,7 @@ agent-android find text "Username" type "myuser"
 # usage: is <state> <ref>
 # states: visible, enabled, checked, selected
 agent-android is visible text "Submit"
-agent-android is visible @e1
+agent-android is visible :e1
 
 # Get property
 # usage: get <prop> <locator> <value>
@@ -114,18 +114,18 @@ agent-android is visible @e1
 # props: text, content-desc, resource-id, class, bounds, checked, enabled
 agent-android get text resource-id com.example:id/title
 agent-android get bounds text "Submit"
-agent-android get text @e1
+agent-android get text :e1
 
 # Check/Uncheck element
 # usage: check <locator> <value> OR check <ref>
 # usage: uncheck <locator> <value> OR uncheck <ref>
 agent-android check text "Agree to terms"
-agent-android uncheck @e1
+agent-android uncheck :e1
 
 # Select element (click by text)
 # usage: select <selector> <value> OR select <value>
 agent-android select "Option A"
-agent-android select @e1 "Option A"
+agent-android select :e1 "Option A"
 ```
 
 ### App Management

@@ -12,13 +12,11 @@ pub struct RefData {
 }
 
 pub fn is_ref_format(s: &str) -> bool {
-    s.starts_with("@") || s.starts_with(":") || s.starts_with("ref=") || (s.starts_with("e") && s[1..].chars().all(char::is_numeric))
+    s.starts_with(":") || s.starts_with("ref=") || (s.starts_with("e") && s[1..].chars().all(char::is_numeric))
 }
 
 pub fn parse_ref_id(ref_id: &str) -> Result<i32, String> {
-    let id_str = if ref_id.starts_with('@') {
-        &ref_id[1..]
-    } else if ref_id.starts_with(':') {
+    let id_str = if ref_id.starts_with(':') {
         &ref_id[1..]
     } else if ref_id.starts_with("ref=") {
         &ref_id[4..]

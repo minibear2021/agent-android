@@ -58,7 +58,7 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
                 let arg = raw_arg.trim().trim_matches('\'').trim_matches('"');
                 
                 // Check if it's a ref
-                if arg.starts_with("@") || arg.starts_with(":") || arg.starts_with("ref=") || (arg.starts_with("e") && arg[1..].chars().all(char::is_numeric)) {
+                if arg.starts_with(":") || arg.starts_with("ref=") || (arg.starts_with("e") && arg[1..].chars().all(char::is_numeric)) {
                      let ref_data = state::resolve_ref(arg, serial)?;
                      adb::input_tap(ref_data.center[0], ref_data.center[1], serial)
                 } else if let (Some(y_arg), Ok(x)) = (rest.get(1), arg.parse::<i32>()) {
@@ -84,7 +84,7 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
              let first_raw = rest[0];
              let first = first_raw.trim().trim_matches('\'').trim_matches('"');
              
-             if (first.starts_with("@") || first.starts_with(":") || first.starts_with("ref=") || (first.starts_with("e") && first[1..].chars().all(char::is_numeric))) && rest.len() >= 2 {
+             if (first.starts_with(":") || first.starts_with("ref=") || (first.starts_with("e") && first[1..].chars().all(char::is_numeric))) && rest.len() >= 2 {
                  // Tap ref then type
                  let ref_data = state::resolve_ref(first, serial)?;
                  adb::input_tap(ref_data.center[0], ref_data.center[1], serial)?;

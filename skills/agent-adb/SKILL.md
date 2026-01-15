@@ -10,7 +10,7 @@ description: Automates Android device interactions via ADB for app testing, UI n
 ```bash
 agent-android connect 192.168.1.5    # Connect to device (optional if USB)
 agent-android snapshot -i            # Get interactive elements with refs
-agent-android tap @e1                # Tap element by ref
+agent-android tap :e1                # Tap element by ref
 agent-android input "hello"            # Type text
 agent-android back                   # Press back button
 ```
@@ -18,7 +18,7 @@ agent-android back                   # Press back button
 ## Core workflow
 
 1. Connect: `agent-android connect <host>` or ensure USB device is listed in `agent-android devices`
-2. Snapshot: `agent-android snapshot -i` (returns elements with refs like `@e1`, `@e2`)
+2. Snapshot: `agent-android snapshot -i` (returns elements with refs like `e1`, `e2`)
 3. Interact using refs from the snapshot
 4. Re-snapshot after navigation or significant UI changes
 
@@ -45,9 +45,9 @@ agent-android snapshot -d 3              # Limit recursion depth to 3
 agent-android snapshot -s "Login"        # Filter by selector (text, id, role)
 ```
 
-### Interactions (use @refs from snapshot)
+### Interactions (use :refs from snapshot)
 ```bash
-agent-android tap @e1                    # Tap element
+agent-android tap :e1                    # Tap element
 agent-android tap 500 1000               # Tap coordinates
 agent-android input "hello"              # Type text
 agent-android key HOME                   # Press Home button
@@ -61,17 +61,17 @@ agent-android wait 2000                  # Wait milliseconds
 ### Query & Inspection
 ```bash
 agent-android find text "Login" click    # Find element by text and click
-agent-android find @e1 click             # Find by ref and click
+agent-android find :e1 click             # Find by ref and click
 agent-android find role button tap       # Find first button and tap
 agent-android is visible text "Submit"   # Check visibility
-agent-android is visible @e1             # Check visibility by ref
+agent-android is visible :e1             # Check visibility by ref
 agent-android get text resource-id com.app:id/title # Get text content
 agent-android get bounds text "Login"    # Get element bounds
-agent-android get text @e1               # Get text by ref
+agent-android get text :e1               # Get text by ref
 agent-android check text "I agree"       # Check checkbox
-agent-android uncheck @e1                # Uncheck element
+agent-android uncheck :e1                # Uncheck element
 agent-android select "Option A"          # Select option (click text)
-agent-android select @e1 "Option A"      # Click dropdown @e1 then click "Option A"
+agent-android select :e1 "Option A"      # Click dropdown :e1 then click "Option A"
 ```
 
 ### App Management
@@ -97,9 +97,9 @@ agent-android start com.example.app/.LoginActivity
 agent-android snapshot -i
 # Output shows: textbox "Email" [ref=e1], textbox "Password" [ref=e2], button "Login" [ref=e3]
 
-agent-android input @e1 "user@example.com"
-agent-android input @e2 "secret"
-agent-android tap @e3
+agent-android input :e1 "user@example.com"
+agent-android input :e2 "secret"
+agent-android tap :e3
 agent-android wait 2000
 ```
 
@@ -115,6 +115,6 @@ agent-android devices --json
 
 Target specific device by serial:
 ```bash
-agent-android -s serial123 tap @e1
+agent-android -s serial123 tap :e1
 agent-android -s 192.168.1.5:5555 snapshot
 ```
