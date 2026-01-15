@@ -17,6 +17,11 @@ fn main() {
     let flags = parse_flags(&args);
     let clean = clean_args(&args);
 
+    if args.iter().any(|a| a == "--version" || a == "-V") {
+        println!("agent-android v{}", env!("CARGO_PKG_VERSION"));
+        return;
+    }
+
     if args.iter().any(|a| a == "--help" || a == "-h") {
         print_help();
         return;
