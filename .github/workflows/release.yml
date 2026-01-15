@@ -42,7 +42,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Build
-        working-directory: ./agent-android
+        working-directory: .
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Rename binary
