@@ -54,9 +54,11 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
         "home" => adb::input_key("HOME", serial),
         
         "tap" | "click" => {
-            if let Some(arg) = rest.get(0) {
+            if let Some(raw_arg) = rest.get(0) {
+                let arg = raw_arg.trim().trim_matches('\'').trim_matches('"');
+                
                 // Check if it's a ref
-                if arg.starts_with("@") || arg.starts_with("ref=") || (arg.starts_with("e") && arg[1..].chars().all(char::is_numeric)) {
+                if arg.starts_with("@") || arg.starts_with(":") || arg.starts_with("ref=") || (arg.starts_with("e") && arg[1..].chars().all(char::is_numeric)) {
                      let ref_data = state::resolve_ref(arg, serial)?;
                      adb::input_tap(ref_data.center[0], ref_data.center[1], serial)
                 } else if let (Some(y_arg), Ok(x)) = (rest.get(1), arg.parse::<i32>()) {
@@ -66,21 +68,23 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
                         Err("Invalid coordinates".to_string())
                     }
                 } else {
-                    Err("Usage: tap <x> <y> OR tap @ref".to_string())
+                    Err(format!("Usage: tap <x> <y> OR tap :ref. Invalid argument: '{}'", raw_arg))
                 }
             } else {
-                Err("Usage: tap <x> <y> OR tap @ref".to_string())
+                Err("Usage: tap <x> <y> OR tap :ref".to_string())
             }
         }
         
         "input" | "type" => {
-             // Support: input "hello" OR input @ref "hello" (tap then type)
+             // Support: input "hello" OR input :ref "hello" (tap then type)
              if rest.is_empty() {
-                 return Err("Usage: input <string> OR input @ref <string>".to_string());
+                 return Err("Usage: input <string> OR input :ref <string>".to_string());
              }
              
-             let first = rest[0];
-             if (first.starts_with("@") || first.starts_with("ref=") || (first.starts_with("e") && first[1..].chars().all(char::is_numeric))) && rest.len() >= 2 {
+             let first_raw = rest[0];
+             let first = first_raw.trim().trim_matches('\'').trim_matches('"');
+             
+             if (first.starts_with("@") || first.starts_with(":") || first.starts_with("ref=") || (first.starts_with("e") && first[1..].chars().all(char::is_numeric))) && rest.len() >= 2 {
                  // Tap ref then type
                  let ref_data = state::resolve_ref(first, serial)?;
                  adb::input_tap(ref_data.center[0], ref_data.center[1], serial)?;

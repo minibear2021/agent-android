@@ -122,7 +122,7 @@ Connection & Device:
 
 Interaction:
   tap <x> <y>                Tap at coordinates
-  tap @ref                   Tap at element reference (from snapshot)
+  tap :ref                   Tap at element reference (from snapshot)
   text <string>              Input text
   key <code|name>            Press key (home, back, enter, etc.)
   home                       Press Home button

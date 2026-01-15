@@ -253,10 +253,10 @@ fn process_node<'a>(
         let name_part = if !name.is_empty() { format!(" \"{}\"", name) } else { "".to_string() };
         
         let line = if compact_mode {
-            // Compact: - role "name" [e1]
-            format!("{}- {}{}{}", indent, role, name_part, format!(" [{}]", ref_id))
+            // Compact: - role "name" [:e1]
+            format!("{}- {}{}{}", indent, role, name_part, format!(" [:e{}]", current_id))
         } else {
-            // Standard: - role "name" [ref=e1] [id=foo]
+            // Standard: - role "name" [ref=:e1] [id=foo]
             let id_part = if !resource_id.is_empty() { 
                 // Extract simplified ID (after /)
                 let simple_id = resource_id.split('/').last().unwrap_or(resource_id);
@@ -264,7 +264,7 @@ fn process_node<'a>(
             } else { 
                 "".to_string() 
             };
-            format!("{}- {}{}{}{}", indent, role, name_part, format!(" [ref={}]", ref_id), id_part)
+            format!("{}- {}{}{}{}", indent, role, name_part, format!(" [ref=:e{}]", current_id), id_part)
         };
         
         lines.push(line);
