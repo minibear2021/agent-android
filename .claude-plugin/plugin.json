@@ -1,0 +1,18 @@
+{
+    "name": "agent-android-plugin",
+    "description": "Fast Android ADB CLI for AI agents.",
+    "version": "0.1.0",
+    "author": {
+        "name": "minibear2021",
+        "url": "https://github.com/minibear2021"
+    },
+    "repository": "https://github.com/minibear2021/agent-android",
+    "license": "MIT",
+    "keywords": [
+        "android",
+        "adb",
+        "cli",
+        "ai-agent",
+        "automation"
+    ]
+}
