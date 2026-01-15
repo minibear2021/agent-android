@@ -47,25 +47,34 @@ jobs:
         working-directory: .
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Rename binary
+      - name: Package binary
         shell: bash
         run: |
-          # Create a directory for artifacts
           mkdir -p release_assets
           
-          # Source path
           SRC="./target/${{ matrix.target }}/release/${{ matrix.artifact_name }}"
+          BINARY_NAME="${{ matrix.artifact_name }}"
+          ASSET_NAME="${{ matrix.asset_name }}"
           
-          # Destination path with version and target info
-          # We extract version from tag (e.g. v1.0.0 -> 1.0.0)
-          VERSION=${GITHUB_REF#refs/tags/v}
-          DEST="release_assets/${{ matrix.asset_name }}"
+          # Remove .exe from asset name for the zip filename if present
+          ZIP_NAME="${ASSET_NAME%.exe}.zip"
           
-          echo "Copying $SRC to $DEST"
-          cp "$SRC" "$DEST"
+          STAGING_DIR="staging"
+          rm -rf "$STAGING_DIR"
+          mkdir -p "$STAGING_DIR"
+          
+          cp "$SRC" "$STAGING_DIR/$BINARY_NAME"
+          
+          cd "$STAGING_DIR"
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            # Use 7z to create a standard zip file on Windows
+            7z a -tzip "../release_assets/$ZIP_NAME" "$BINARY_NAME"
+          else
+            zip "../release_assets/$ZIP_NAME" "$BINARY_NAME"
+          fi
 
       - name: Upload binaries to Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: release_assets/*
+          files: release_assets/*.zip
