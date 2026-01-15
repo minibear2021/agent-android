@@ -57,8 +57,11 @@ agent-android exec reboot
 Get a UI snapshot to understand the screen content. This generates short references (e.g., `e1`, `e2`) that can be used in subsequent commands.
 
 ```bash
-# Get full UI tree
+# Get UI tree (default is compact mode)
 agent-android snapshot
+
+# Get full UI tree (including resource-ids and structural elements)
+agent-android snapshot -f
 
 # Get interactive elements only (buttons, inputs, etc.)
 agent-android snapshot -i
@@ -203,8 +206,8 @@ Snapshot output:
   "data": {
     "tree": "- button \"Login\" [ref=e1]\n- textbox \"User\" [ref=e2]",
     "refs": {
-      "e1": { "role": "button", "name": "Login", "center": [500, 1000] },
-      "e2": { "role": "textbox", "name": "User", "center": [500, 1200] }
+      "e1": { "role": "button", "name": "Login" },
+      "e2": { "role": "textbox", "name": "User" }
     }
   }
 }

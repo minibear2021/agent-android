@@ -45,9 +45,9 @@ agent-android exec <args>                # Run raw adb command (e.g. exec reboot
 
 ### Snapshot (UI analysis)
 ```bash
-agent-android snapshot                   # Full UI hierarchy
+agent-android snapshot                   # Get UI hierarchy (compact mode by default)
 agent-android snapshot -i                # Interactive elements only (recommended)
-agent-android snapshot -c                # Compact output (less noise)
+agent-android snapshot -f                # Full output (include resource-ids and structural elements)
 agent-android snapshot -d 3              # Limit recursion depth to 3
 agent-android snapshot -s "Login"        # Filter by selector (text, id, role)
 ```

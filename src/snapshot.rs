@@ -34,7 +34,7 @@ pub fn dump_ui(serial: Option<&str>) -> Result<String, String> {
     std::fs::read_to_string(&local_path).map_err(|e| format!("Failed to read dump: {}", e))
 }
 
-pub fn get_snapshot(serial: Option<&str>, interactive_only: bool, compact_mode: bool, max_depth: Option<usize>, selector: Option<&str>) -> Result<Value, String> {
+pub fn get_snapshot(serial: Option<&str>, interactive_only: bool, full_mode: bool, max_depth: Option<usize>, selector: Option<&str>) -> Result<Value, String> {
     let xml_content = dump_ui(serial)?;
 
     // Parse
@@ -59,6 +59,9 @@ pub fn get_snapshot(serial: Option<&str>, interactive_only: bool, compact_mode: 
     // We need to know if the current node is within the selected subtree to decide whether to print it
     // But we must traverse everything to keep IDs stable.
     
+    // Compact mode is active when NOT in full mode
+    let compact_mode = !full_mode;
+
     process_node(
         start_node, 
         0, 
@@ -84,8 +87,7 @@ pub fn get_snapshot(serial: Option<&str>, interactive_only: bool, compact_mode: 
             "role": v.role,
             "name": v.name,
             // Android specific fields can be added here
-            "bounds": v.bounds,
-            "center": v.center
+            // bounds and center removed to save tokens, available via 'get' command if needed
         }));
     }
 
@@ -205,6 +207,7 @@ fn process_node<'a>(
     
     // Determine role
     let role = map_class_to_role(class);
+    let is_structural = is_structural_role(role);
     
     // Determine name
     let name = if !text.is_empty() {
@@ -221,6 +224,9 @@ fn process_node<'a>(
     
     let should_include = if interactive_only {
         is_interactive
+    } else if compact_mode && is_structural && !has_content && !is_interactive {
+        // In compact mode, skip unnamed structural elements
+        false
     } else {
         // In full mode, include everything that is not purely structural wrapper with no ID/name
         // But for clarity, let's keep it dense.
@@ -234,23 +240,7 @@ fn process_node<'a>(
 
         // Only assign refs to interactive elements
         let ref_part = if is_interactive {
-            // *counter is already incremented at top for stable ID generation?
-            // Actually, if we want sparse IDs (only for interactive), we should only increment here?
-            // BUT: state.rs uses find_node_by_counter which iterates EVERYTHING.
-            // If we change ID generation here, we break state.rs resolution unless we change it too.
-            //
-            // Current state.rs: find_node_by_counter increments for EVERY element node.
-            // So IDs are stable index in DFS traversal.
-            //
-            // If we only print [e1] for interactive elements, e.g. e5, e10...
-            // the user will see "e5".
-            // When user says "tap :e5", state.rs resolves e5.
-            // Since state.rs counts everything, it will find the 5th element.
-            // Is the 5th element the one we labeled e5?
-            // Yes, because we used *counter (which counts everything) to generate the label.
-            //
-            // So we can keep the global counter, but only SHOW the label if interactive.
-            
+            // *counter is already incremented at top for stable ID generation
             refs.insert(ref_id.clone(), RefData {
                 bounds,
                 center,
@@ -268,9 +258,10 @@ fn process_node<'a>(
         let name_part = if !name.is_empty() { format!(" \"{}\"", name) } else { "".to_string() };
         
         let line = if compact_mode {
-            // Compact: - role "name" [e1]
-            // Only show [e1] if interactive
-            let short_ref = if is_interactive { format!(" [{}]", ref_id) } else { "".to_string() };
+            // Compact: - role "name" [ref=e1]
+            // Format aligned with agent-browser (keep ref= prefix)
+            // But remove ID for compactness
+            let short_ref = if is_interactive { format!(" [ref={}]", ref_id) } else { "".to_string() };
             format!("{}- {}{}{}", indent, role, name_part, short_ref)
         } else {
             // Standard: - role "name" [ref=e1] [id=foo]
@@ -288,9 +279,13 @@ fn process_node<'a>(
     }
 
     // Recurse
+    // If we skipped printing this node due to compaction, we pass the SAME depth to children
+    // to flatten the tree. Otherwise, we increase depth.
+    let next_depth = if should_include && depth_allowed { depth + 1 } else { depth };
+    
     for child in node.children() {
         if child.is_element() {
-            process_node(child, depth + 1, counter, refs, lines, interactive_only, compact_mode, max_depth, selector_info);
+            process_node(child, next_depth, counter, refs, lines, interactive_only, compact_mode, max_depth, selector_info);
         }
     }
 }
@@ -314,6 +309,14 @@ pub fn map_class_to_role(class: &str) -> &str {
         // Fallback: simplified class name
         class.split('.').last().unwrap_or("element")
     }
+}
+
+pub fn is_structural_role(role: &str) -> bool {
+    matches!(role, 
+        "LinearLayout" | "FrameLayout" | "RelativeLayout" | "ConstraintLayout" | 
+        "View" | "ViewGroup" | "DrawerLayout" | "CoordinatorLayout" | 
+        "list" | "scroll" | "element"
+    )
 }
 
 pub fn parse_bounds(bounds: &str) -> [i32; 4] {

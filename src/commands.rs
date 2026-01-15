@@ -223,7 +223,7 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
         
         "snapshot" => {
              let interactive = args.iter().any(|a| a == "-i" || a == "--interactive");
-             let compact = args.iter().any(|a| a == "-c" || a == "--compact");
+             let full = args.iter().any(|a| a == "-f" || a == "--full");
              
              // Parse depth
              let mut max_depth = None;
@@ -243,7 +243,7 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
                  }
              }
              
-             snapshot::get_snapshot(serial, interactive, compact, max_depth, selector)
+             snapshot::get_snapshot(serial, interactive, full, max_depth, selector)
         }
 
         "find" => query::handle_find(&rest, serial),
