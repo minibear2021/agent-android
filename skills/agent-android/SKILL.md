@@ -9,7 +9,7 @@ description: Automates Android device interactions for app testing, UI navigatio
 
 ```bash
 agent-android connect 192.168.1.5    # Connect to device (optional if USB)
-agent-android snapshot               # Get  elements with refs
+agent-android snapshot               # Get elements with refs
 agent-android tap :e1                # Tap element by ref
 agent-android input "hello"            # Type text
 agent-android back                   # Press back button
@@ -48,7 +48,9 @@ agent-android snapshot                   # Get UI hierarchy (compact mode by def
 agent-android snapshot -i                # Interactive elements only
 agent-android snapshot -f                # Full output (include resource-ids and structural elements)
 agent-android snapshot -d 3              # Limit recursion depth to 3
-agent-android snapshot --selector "Login"        # Filter by selector (text, id, role)
+agent-android snapshot --selector "Login"        # Filter by text content (subtree)
+agent-android snapshot --selector "role=list"    # Filter by role (e.g., list, button, textbox)
+agent-android snapshot --selector "id=header"    # Filter by resource-id
 ```
 
 ### Interactions (use :refs from snapshot)
@@ -66,7 +68,10 @@ agent-android wait 2000                  # Wait milliseconds
 
 ### Query & Inspection
 ```bash
+agent-android find text "Login"          # Find element info (no click)
+agent-android find "text=Login"          # Same as above (key=value syntax)
 agent-android find text "Login" click    # Find element by text and click
+agent-android find "text=Login" click    # Find element by text and click
 agent-android find :e1 click             # Find by ref and click
 agent-android find role button tap       # Find first button and tap
 agent-android is visible text "Submit"   # Check visibility

@@ -55,10 +55,25 @@ agent-android exec reboot
 ### Snapshot (UI analysis)
 ```bash
 agent-android snapshot                   # Get UI hierarchy (compact mode by default)
-agent-android snapshot -i                # Interactive elements only (recommended)
+# Output:
+# - button "Login" [ref=e1]
+# - textbox "Username" [ref=e2]
+agent-android snapshot -i                # Interactive elements only
 agent-android snapshot -f                # Full output (include resource-ids and structural elements)
 agent-android snapshot -d 3              # Limit recursion depth to 3
-agent-android snapshot -q "Login"        # Filter by selector (text, id, role)
+
+# Filter by selector (subtree snapshot)
+
+# Default searches by text content:
+agent-android snapshot --selector "Login"
+
+# Search by specific attribute (text, resource-id, role, content-desc):
+agent-android snapshot --selector "role=button"
+agent-android snapshot --selector "resource-id=com.example:id/login_btn"
+
+# Interact using references
+agent-android click :e1
+agent-android type :e2 "myuser"
 ```
 
 ### Input Control
@@ -83,13 +98,20 @@ agent-android input :e2 "Hello World"  # Taps e2 first, then types
 ```bash
 # Find element and act on it
 # usage: find <locator> <value> [action] [text]
+# usage: find <key=value> [action] [text]
 # usage: find <ref> [action] [text]
-# locators: text, role, resource-id, content-desc
-# actions: click (default), type, info
-agent-android find text "Login" click
-agent-android find :e1 click
-agent-android find role button tap
-agent-android find text "Username" type "myuser"
+
+# 1. Find and returns element properties
+agent-android find text "Login"
+agent-android find "text=Login"  # Same as above
+agent-android find :e1
+
+# 2. Find and act
+agent-android find text "Login" click     # Click
+agent-android find "text=Login" click     # Click
+agent-android find :e1 click              # Click
+agent-android find role button tap        # Tap first button
+agent-android find text "Username" type "myuser" # Type text
 
 # Check state
 # usage: is <state> <locator> <value>

@@ -133,14 +133,15 @@ Interaction:
 Query & Inspection:
   snapshot                   Dump UI hierarchy
     -i, --interactive        Only interactive elements
-    -c, --compact            Compact output (less noise)
+    -f, --full               Full output (include resource-ids and structural elements)
     -d, --depth <n>          Limit recursion depth
     --selector <sel>         Focus on specific element (text, id, role)
   
   find <locator> <value> [action] [text]
     Locators: text, role, resource-id, content-desc, etc.
-    Actions: click, type, info (default: click)
+    Actions: click, type, info (default: info)
     Example: find text "Login" click
+    Example: find "text=Login" click
   
   is <state> <locator> <value>
     States: visible, enabled, checked, selected

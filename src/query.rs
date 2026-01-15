@@ -59,19 +59,26 @@ fn find_node<'a>(doc: &'a Document, locator: &str, value: &str) -> Option<Node<'
 }
 
 pub fn handle_find(args: &[&str], serial: Option<&str>) -> Result<Value, String> {
-    // usage: find <locator> <value> [action] [input_text] OR find <ref> [action] [input_text]
+    // usage: find <locator> <value> [action] [input_text] 
+    // usage: find <key=value> [action] [input_text]
+    // usage: find <ref> [action] [input_text]
     if args.is_empty() {
-        return Err("Usage: find <locator> <value> [action] [text] OR find <ref> [action] [text]".to_string());
+        return Err("Usage: find <locator> <value> [action] [text] OR find <key=value> [action] [text] OR find <ref> [action] [text]".to_string());
     }
     
-    let (locator, value, action, text_arg) = if state::is_ref_format(args[0]) {
-        (args[0], "", args.get(1).copied().unwrap_or("click"), args.get(2).copied())
+    let (locator, value, next_arg_idx) = if state::is_ref_format(args[0]) {
+        (args[0], "", 1)
+    } else if let Some(idx) = args[0].find('=') {
+        (&args[0][..idx], &args[0][idx+1..], 1)
     } else {
         if args.len() < 2 {
             return Err("Usage: find <locator> <value> [action] [text]".to_string());
         }
-        (args[0], args[1], args.get(2).copied().unwrap_or("click"), args.get(3).copied())
+        (args[0], args[1], 2)
     };
+    
+    let action = args.get(next_arg_idx).copied().unwrap_or("info");
+    let text_arg = args.get(next_arg_idx + 1).copied();
     
     let result = find_element(locator, value, serial)?;
     
