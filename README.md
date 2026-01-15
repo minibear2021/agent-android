@@ -127,9 +127,8 @@ agent-android list-packages
 # Install APK
 agent-android install ./app.apk
 
-# Start an app (package name or activity)
+# Start an app
 agent-android start com.example.app
-agent-android start com.example.app/.MainActivity
 
 # Stop an app
 agent-android stop com.example.app

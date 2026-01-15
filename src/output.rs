@@ -154,7 +154,7 @@ App Management:
   install <path>             Install APK
   uninstall <pkg>            Uninstall package
   list-packages              List installed packages
-  start <intent>             Start activity (package/activity)
+  start <pkg>             Start package
   stop <pkg>                 Force stop package
 
 Media:
