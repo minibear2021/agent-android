@@ -1,6 +1,6 @@
 ---
 name: agent-android
-description: Automates Android device interactions via ADB for app testing, UI navigation, screenshots, and data extraction. Use when the user needs to control Android devices, inspect app UI,test Android apps, or extract device info.
+description: Automates Android device interactions for app testing, UI navigation, screenshots, and data extraction. Use when the user needs to control Android devices, inspect app UI, test Android apps, or extract device info.
 ---
 
 # Android Automation with agent-android

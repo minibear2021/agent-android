@@ -1,6 +1,6 @@
 # agent-android
 
-A fast, pure Rust CLI tool for controlling Android devices via ADB, designed for AI agents.
+A fast, pure Rust CLI tool for controlling Android devices, designed for AI agents.
 
 ## Features
 
