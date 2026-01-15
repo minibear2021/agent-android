@@ -14,7 +14,7 @@ pub fn run_adb(args: &[&str], serial: Option<&str>) -> Result<String, String> {
         let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
         let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
         
-        let msg = if stderr.is_empty() {
+        let mut msg = if stderr.is_empty() {
             if stdout.is_empty() {
                 "Unknown error".to_string()
             } else {
@@ -23,6 +23,10 @@ pub fn run_adb(args: &[&str], serial: Option<&str>) -> Result<String, String> {
         } else {
             format!("{} (stdout: {})", stderr, stdout)
         };
+
+        if msg.contains("more than one device/emulator") {
+            msg.push_str("\nHint: Use --serial <serial> or -s <serial> to specify a device.");
+        }
         
         return Err(format!("ADB error: {}", msg));
     }
@@ -69,10 +73,10 @@ pub fn shell(command: &str, serial: Option<&str>) -> Result<Value, String> {
 }
 
 pub fn get_device_info(serial: Option<&str>) -> Result<Value, String> {
-    let model = run_adb(&["shell", "getprop", "ro.product.model"], serial).unwrap_or_default();
-    let manufacturer = run_adb(&["shell", "getprop", "ro.product.manufacturer"], serial).unwrap_or_default();
-    let android_version = run_adb(&["shell", "getprop", "ro.build.version.release"], serial).unwrap_or_default();
-    let sdk = run_adb(&["shell", "getprop", "ro.build.version.sdk"], serial).unwrap_or_default();
+    let model = run_adb(&["shell", "getprop", "ro.product.model"], serial)?;
+    let manufacturer = run_adb(&["shell", "getprop", "ro.product.manufacturer"], serial)?;
+    let android_version = run_adb(&["shell", "getprop", "ro.build.version.release"], serial)?;
+    let sdk = run_adb(&["shell", "getprop", "ro.build.version.sdk"], serial)?;
     
     Ok(json!({
         "info": {
