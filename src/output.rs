@@ -82,9 +82,9 @@ pub fn print_response(resp: &Response, json_mode: bool) {
              return;
         }
 
-        // Tree (Snapshot)
-        if let Some(tree) = data.get("tree").and_then(|v| v.as_str()) {
-             println!("{}", tree);
+        // Snapshot
+        if let Some(snapshot) = data.get("snapshot").and_then(|v| v.as_str()) {
+             println!("{}", snapshot);
              return;
         }
         

@@ -90,7 +90,7 @@ pub fn get_snapshot(serial: Option<&str>, interactive_only: bool, compact_mode: 
     }
 
     Ok(json!({
-        "tree": tree_str,
+        "snapshot": tree_str,
         "refs": ref_map_json
     }))
 }
@@ -229,24 +229,39 @@ fn process_node<'a>(
     };
 
     if should_include && depth_allowed {
-        // *counter is already incremented at top
-        
         let bounds = parse_bounds(bounds_str);
         let center = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2];
 
-        // We only insert into refs if we want to expose it for interaction
-        // BUT for stable resolution, we technically might want to resolve ANY node if user guesses ID?
-        // No, let's stick to "if it's in the tree output, it's resolvable".
-        // Actually, for stateless resolution to work perfectly, we might want to resolve ANY ID.
-        // But let's keep refs map logic for now (it's only used for JSON output).
-        // The stateless resolution in state.rs will re-run this logic.
-        
-        refs.insert(ref_id.clone(), RefData {
-            bounds,
-            center,
-            role: role.to_string(),
-            name: if name.is_empty() { None } else { Some(name.to_string()) },
-        });
+        // Only assign refs to interactive elements
+        let ref_part = if is_interactive {
+            // *counter is already incremented at top for stable ID generation?
+            // Actually, if we want sparse IDs (only for interactive), we should only increment here?
+            // BUT: state.rs uses find_node_by_counter which iterates EVERYTHING.
+            // If we change ID generation here, we break state.rs resolution unless we change it too.
+            //
+            // Current state.rs: find_node_by_counter increments for EVERY element node.
+            // So IDs are stable index in DFS traversal.
+            //
+            // If we only print [e1] for interactive elements, e.g. e5, e10...
+            // the user will see "e5".
+            // When user says "tap :e5", state.rs resolves e5.
+            // Since state.rs counts everything, it will find the 5th element.
+            // Is the 5th element the one we labeled e5?
+            // Yes, because we used *counter (which counts everything) to generate the label.
+            //
+            // So we can keep the global counter, but only SHOW the label if interactive.
+            
+            refs.insert(ref_id.clone(), RefData {
+                bounds,
+                center,
+                role: role.to_string(),
+                name: if name.is_empty() { None } else { Some(name.to_string()) },
+            });
+            
+            format!(" [ref={}]", ref_id)
+        } else {
+            "".to_string()
+        };
 
         // Build line: - role "name" [ref=e1]
         let indent = "  ".repeat(display_depth);
@@ -254,7 +269,9 @@ fn process_node<'a>(
         
         let line = if compact_mode {
             // Compact: - role "name" [e1]
-            format!("{}- {}{}{}", indent, role, name_part, format!(" [e{}]", current_id))
+            // Only show [e1] if interactive
+            let short_ref = if is_interactive { format!(" [{}]", ref_id) } else { "".to_string() };
+            format!("{}- {}{}{}", indent, role, name_part, short_ref)
         } else {
             // Standard: - role "name" [ref=e1] [id=foo]
             let id_part = if !resource_id.is_empty() { 
@@ -264,7 +281,7 @@ fn process_node<'a>(
             } else { 
                 "".to_string() 
             };
-            format!("{}- {}{}{}{}", indent, role, name_part, format!(" [ref=e{}]", current_id), id_part)
+            format!("{}- {}{}{}{}", indent, role, name_part, ref_part, id_part)
         };
         
         lines.push(line);

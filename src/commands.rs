@@ -167,9 +167,21 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
         
         "start" => {
             if let Some(target) = rest.get(0) {
-                adb::start_activity(target, serial)
+                if target.contains('/') {
+                    adb::start_activity(target, serial)
+                } else {
+                    // Try to resolve activity
+                    match adb::resolve_activity(target, serial) {
+                        Ok(resolved) => adb::start_activity(&resolved, serial),
+                        Err(_) => {
+                            // Fallback: try starting without component (might fail if not intent filter)
+                            // or better, return the error
+                            Err(format!("Could not resolve main activity for package '{}'. Try specifying 'package/activity' explicitly.", target))
+                        }
+                    }
+                }
             } else {
-                Err("Usage: start <package/activity>".to_string())
+                Err("Usage: start <package/activity> or <package>".to_string())
             }
         }
         

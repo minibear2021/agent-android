@@ -22,6 +22,13 @@ agent-android back                   # Press back button
 3. Interact using refs from the snapshot
 4. Re-snapshot after navigation or significant UI changes
 
+## Token Usage Optimization
+
+To conserve tokens and improve performance:
+- **Prefer `snapshot` over `screenshot`**: The `snapshot` command returns a structured text representation of the UI, which consumes significantly fewer tokens than processing raw images. Only use `screenshot` when visual verification is strictly necessary (e.g., checking layout rendering or image content).
+- **Use `-i` flag**: Always use `agent-android snapshot -i` to filter for interactive elements only, reducing the output size.
+- **Batch interactions**: When possible, plan multiple interactions based on a single snapshot rather than taking a new snapshot after every single tap, unless the UI state changes drastically.
+
 ## Commands
 
 ### Connection & Device
@@ -79,7 +86,7 @@ agent-android select :e1 "Option A"      # Click dropdown :e1 then click "Option
 agent-android install app.apk            # Install APK
 agent-android uninstall com.example.app  # Uninstall package
 agent-android list-packages              # List installed packages
-agent-android start com.example.app/.Main          # Start activity
+agent-android start com.example.app      # Start application
 agent-android stop com..example.app      # Force stop package
 ```
 
@@ -93,7 +100,7 @@ agent-android record video.mp4 10        # Record 10s video
 ## Example: Login Flow
 
 ```bash
-agent-android start com.example.app/.LoginActivity
+agent-android start com.example.app
 agent-android snapshot -i
 # Output shows: textbox "Email" [ref=e1], textbox "Password" [ref=e2], button "Login" [ref=e3]
 
@@ -101,6 +108,7 @@ agent-android input :e1 "user@example.com"
 agent-android input :e2 "secret"
 agent-android tap :e3
 agent-android wait 2000
+agent-android snapshot -i # Check result
 ```
 
 ## JSON output (for parsing)

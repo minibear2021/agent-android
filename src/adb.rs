@@ -132,6 +132,29 @@ pub fn list_packages(serial: Option<&str>) -> Result<Value, String> {
     Ok(json!({ "stdout": packages.join("\n") }))
 }
 
+pub fn resolve_activity(package: &str, serial: Option<&str>) -> Result<String, String> {
+    let output = run_adb(&[
+        "shell", "cmd", "package", "resolve-activity", "--brief",
+        "-a", "android.intent.action.MAIN",
+        "-c", "android.intent.category.LAUNCHER",
+        package
+    ], serial)?;
+
+    // Output format is typically:
+    // com.example.package/com.example.package.MainActivity
+    // or
+    // Priority: 0
+    // com.example.package/com.example.package.MainActivity
+    
+    for line in output.lines() {
+        if line.contains('/') && !line.starts_with("Priority:") {
+            return Ok(line.trim().to_string());
+        }
+    }
+    
+    Err(format!("Could not resolve main activity for package: {}", package))
+}
+
 pub fn start_activity(target: &str, serial: Option<&str>) -> Result<Value, String> {
     let output = run_adb(&["shell", "am", "start", "-n", target], serial)?;
     Ok(json!({ "stdout": output.trim() }))
