@@ -52,26 +52,13 @@ agent-android shell ls -la
 agent-android exec reboot
 ```
 
-### Snapshot & References (Agent Mode)
-
-Get a UI snapshot to understand the screen content. This generates short references (e.g., `e1`, `e2`) that can be used in subsequent commands.
-
+### Snapshot (UI analysis)
 ```bash
-# Get UI tree (default is compact mode)
-agent-android snapshot
-
-# Get full UI tree (including resource-ids and structural elements)
-agent-android snapshot -f
-
-# Get interactive elements only (buttons, inputs, etc.)
-agent-android snapshot -i
-# Output:
-# - button "Login" [ref=e1]
-# - textbox "Username" [ref=e2]
-
-# Interact using references
-agent-android click :e1
-agent-android type :e2 "myuser"
+agent-android snapshot                   # Get UI hierarchy (compact mode by default)
+agent-android snapshot -i                # Interactive elements only (recommended)
+agent-android snapshot -f                # Full output (include resource-ids and structural elements)
+agent-android snapshot -d 3              # Limit recursion depth to 3
+agent-android snapshot -q "Login"        # Filter by selector (text, id, role)
 ```
 
 ### Input Control

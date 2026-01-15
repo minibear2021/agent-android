@@ -135,7 +135,7 @@ Query & Inspection:
     -i, --interactive        Only interactive elements
     -c, --compact            Compact output (less noise)
     -d, --depth <n>          Limit recursion depth
-    -s, --selector <sel>     Focus on specific element (text, id, role)
+    --selector <sel>         Focus on specific element (text, id, role)
   
   find <locator> <value> [action] [text]
     Locators: text, role, resource-id, content-desc, etc.
@@ -164,7 +164,6 @@ Media:
 Options:
   --json                     Output as JSON
   --serial, -s <serial>      Target specific device
-  --debug                    Debug output
 "#
     );
 }

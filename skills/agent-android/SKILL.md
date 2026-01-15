@@ -26,7 +26,6 @@ agent-android back                   # Press back button
 
 To conserve tokens and improve performance:
 - **Prefer `snapshot` over `screenshot`**: The `snapshot` command returns a structured text representation of the UI, which consumes significantly fewer tokens than processing raw images. Only use `screenshot` when visual verification is strictly necessary (e.g., checking layout rendering or image content).
-- **Use `-i` flag**: Always use `agent-android snapshot -i` to filter for interactive elements only, reducing the output size.
 - **Batch interactions**: When possible, plan multiple interactions based on a single snapshot rather than taking a new snapshot after every single tap, unless the UI state changes drastically.
 
 ## Commands
@@ -46,10 +45,10 @@ agent-android exec <args>                # Run raw adb command (e.g. exec reboot
 ### Snapshot (UI analysis)
 ```bash
 agent-android snapshot                   # Get UI hierarchy (compact mode by default)
-agent-android snapshot -i                # Interactive elements only (recommended)
+agent-android snapshot -i                # Interactive elements only
 agent-android snapshot -f                # Full output (include resource-ids and structural elements)
 agent-android snapshot -d 3              # Limit recursion depth to 3
-agent-android snapshot -s "Login"        # Filter by selector (text, id, role)
+agent-android snapshot --selector "Login"        # Filter by selector (text, id, role)
 ```
 
 ### Interactions (use :refs from snapshot)

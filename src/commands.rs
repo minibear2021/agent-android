@@ -237,7 +237,7 @@ pub fn execute_command(args: &[String], flags: &Flags) -> Result<Value, String> 
              
              // Parse selector
              let mut selector = None;
-             if let Some(idx) = args.iter().position(|a| a == "-s" || a == "--selector") {
+             if let Some(idx) = args.iter().position(|a| a == "--selector") {
                  if let Some(val) = args.get(idx + 1) {
                      selector = Some(val.as_str());
                  }
