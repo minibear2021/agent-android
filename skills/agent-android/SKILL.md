@@ -9,7 +9,7 @@ description: Automates Android device interactions for app testing, UI navigatio
 
 ```bash
 agent-android connect 192.168.1.5    # Connect to device (optional if USB)
-agent-android snapshot -i            # Get interactive elements with refs
+agent-android snapshot               # Get  elements with refs
 agent-android tap :e1                # Tap element by ref
 agent-android input "hello"            # Type text
 agent-android back                   # Press back button
@@ -18,7 +18,7 @@ agent-android back                   # Press back button
 ## Core workflow
 
 1. Connect: `agent-android connect <host>` or ensure USB device is listed in `agent-android devices`
-2. Snapshot: `agent-android snapshot -i` (returns elements with refs like `e1`, `e2`)
+2. Snapshot: `agent-android snapshot` (returns elements with refs like `e1`, `e2`)
 3. Interact using refs from the snapshot
 4. Re-snapshot after navigation or significant UI changes
 
@@ -100,21 +100,21 @@ agent-android record video.mp4 10        # Record 10s video
 
 ```bash
 agent-android start com.example.app
-agent-android snapshot -i
+agent-android snapshot
 # Output shows: textbox "Email" [ref=e1], textbox "Password" [ref=e2], button "Login" [ref=e3]
 
 agent-android input :e1 "user@example.com"
 agent-android input :e2 "secret"
 agent-android tap :e3
 agent-android wait 2000
-agent-android snapshot -i # Check result
+agent-android snapshot   # Check result
 ```
 
 ## JSON output (for parsing)
 
 Add `--json` for machine-readable output:
 ```bash
-agent-android snapshot -i --json
+agent-android snapshot --json
 agent-android devices --json
 ```
 
