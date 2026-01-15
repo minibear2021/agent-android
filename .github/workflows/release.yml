@@ -52,7 +52,7 @@ jobs:
           mkdir -p release_assets
           
           # Source path
-          SRC="agent-android/target/${{ matrix.target }}/release/${{ matrix.artifact_name }}"
+          SRC="./target/${{ matrix.target }}/release/${{ matrix.artifact_name }}"
           
           # Destination path with version and target info
           # We extract version from tag (e.g. v1.0.0 -> 1.0.0)
