@@ -132,7 +132,6 @@ Interaction:
 
 Query & Inspection:
   snapshot                   Dump UI hierarchy
-    -i, --interactive        Only interactive elements
     -f, --full               Full output (include resource-ids and structural elements)
     -d, --depth <n>          Limit recursion depth
     --selector <sel>         Focus on specific element (text, id, role)

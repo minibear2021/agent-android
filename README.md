@@ -58,7 +58,6 @@ agent-android snapshot                   # Get UI hierarchy (compact mode by def
 # Output:
 # - button "Login" [ref=e1]
 # - textbox "Username" [ref=e2]
-agent-android snapshot -i                # Interactive elements only
 agent-android snapshot -f                # Full output (include resource-ids and structural elements)
 agent-android snapshot -d 3              # Limit recursion depth to 3
 

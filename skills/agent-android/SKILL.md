@@ -22,6 +22,10 @@ agent-android back                   # Press back button
 3. Interact using refs from the snapshot
 4. Re-snapshot after navigation or significant UI changes
 
+## UI Synchronization
+
+Whenever an action causes a UI change (e.g., navigating to a new screen, opening a dialog), you **MUST** run the `snapshot` command again to update the element references and page state before attempting further interactions. Using stale references will lead to errors.
+
 ## Token Usage Optimization
 
 To conserve tokens and improve performance:
@@ -45,7 +49,6 @@ agent-android exec <args>                # Run raw adb command (e.g. exec reboot
 ### Snapshot (UI analysis)
 ```bash
 agent-android snapshot                   # Get UI hierarchy (compact mode by default)
-agent-android snapshot -i                # Interactive elements only
 agent-android snapshot -f                # Full output (include resource-ids and structural elements)
 agent-android snapshot -d 3              # Limit recursion depth to 3
 agent-android snapshot --selector "Login"        # Filter by text content (subtree)

@@ -34,7 +34,7 @@ pub fn dump_ui(serial: Option<&str>) -> Result<String, String> {
     std::fs::read_to_string(&local_path).map_err(|e| format!("Failed to read dump: {}", e))
 }
 
-pub fn get_snapshot(serial: Option<&str>, interactive_only: bool, full_mode: bool, max_depth: Option<usize>, selector: Option<&str>) -> Result<Value, String> {
+pub fn get_snapshot(serial: Option<&str>, full_mode: bool, max_depth: Option<usize>, selector: Option<&str>) -> Result<Value, String> {
     let xml_content = dump_ui(serial)?;
 
     // Parse
@@ -68,7 +68,6 @@ pub fn get_snapshot(serial: Option<&str>, interactive_only: bool, full_mode: boo
         &mut ref_counter, 
         &mut refs, 
         &mut tree_lines, 
-        interactive_only, 
         compact_mode, 
         max_depth,
         selector.map(|s| (s, root)) // Pass selector and the resolved root node
@@ -128,7 +127,6 @@ fn process_node<'a>(
     counter: &mut i32, 
     refs: &mut HashMap<String, RefData>, 
     lines: &mut Vec<String>,
-    interactive_only: bool,
     compact_mode: bool,
     max_depth: Option<usize>,
     selector_info: Option<(&str, Node<'a, 'a>)>
@@ -187,7 +185,7 @@ fn process_node<'a>(
         // Recurse to keep IDs stable
         for child in node.children() {
             if child.is_element() {
-                process_node(child, depth + 1, counter, refs, lines, interactive_only, compact_mode, max_depth, selector_info);
+                process_node(child, depth + 1, counter, refs, lines, compact_mode, max_depth, selector_info);
             }
         }
         return;
@@ -222,9 +220,7 @@ fn process_node<'a>(
     let is_interactive = clickable || checkable || enabled && (role == "textbox" || role == "slider");
     let has_content = !name.is_empty();
     
-    let should_include = if interactive_only {
-        is_interactive
-    } else if compact_mode && is_structural && !has_content && !is_interactive {
+    let should_include = if compact_mode && is_structural && !has_content && !is_interactive {
         // In compact mode, skip unnamed structural elements
         false
     } else {
@@ -281,7 +277,7 @@ fn process_node<'a>(
     
     for child in node.children() {
         if child.is_element() {
-            process_node(child, next_depth, counter, refs, lines, interactive_only, compact_mode, max_depth, selector_info);
+            process_node(child, next_depth, counter, refs, lines, compact_mode, max_depth, selector_info);
         }
     }
 }
